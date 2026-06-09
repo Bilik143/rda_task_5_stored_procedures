@@ -1,8 +1,15 @@
--- Ensure we are using the test database
+DROP DATABASE IF EXISTS ShopDB;
+CREATE DATABASE ShopDB;
 USE ShopDB;
 
--- Ensure ProductInventory table exists (idempotent).
--- Avoid FK constraints here so this script can run independently of creation order.
+CREATE TABLE IF NOT EXISTS Products (
+	ID INT PRIMARY KEY,
+	Name VARCHAR(50)
+);
+INSERT INTO Products (ID, Name)
+VALUES (1, 'AwersomeProduct')
+ON DUPLICATE KEY UPDATE Name=VALUES(Name);
+
 CREATE TABLE IF NOT EXISTS ProductInventory (
 	ID INT PRIMARY KEY,
 	ProductID INT,
@@ -10,7 +17,6 @@ CREATE TABLE IF NOT EXISTS ProductInventory (
 	WarehouseID INT
 );
 
--- Insert sample rows required by tests (idempotent - will update if PK exists)
 INSERT INTO ProductInventory (ID, ProductID, WarehouseAmount, WarehouseID)
 VALUES (1, 1, 2, 1)
 ON DUPLICATE KEY UPDATE ProductID=VALUES(ProductID), WarehouseAmount=VALUES(WarehouseAmount), WarehouseID=VALUES(WarehouseID);
